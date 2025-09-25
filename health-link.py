@@ -140,3 +140,102 @@ class HealthCareWorker:
                 print(f"{key}: {value}")
         else:
             print("Patient not found.")
+class HealthLinkApp:
+    def __init__(self):
+        self.patients = {}  # medical_id → Patient object
+        self.health_workers = {}  # specialty → list of HealthCareWorker objects
+
+    def log_login(self, username, role):
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        LOGIN_LOG.append(f"{timestamp} | {role} login | {username}")
+
+    def onboard_patient(self):
+        print("\nOnboarding Patient")
+        name = input("Name: ")
+        email = input("Email: ")
+        password = input("Password: ")
+        dob = input("Date of Birth (YYYY-MM-DD): ")
+        patient = Patient(name, email, password, dob)
+        self.patients[patient.medical_id] = patient
+        self.log_login(email, "Patient")
+        print(f"Patient {name} onboarded successfully.")
+        print(f"Medical ID: {patient.medical_id}")
+
+    def onboard_health_worker(self):
+        print("\nOnboarding Health Care Worker")
+        name = input("Name: ")
+        email = input("Email: ")
+        password = input("Password: ")
+        dob = input("Date of Birth (YYYY-MM-DD): ")
+        print("\nSelect your specialty:")
+        for key, value in MEDICAL_DEPARTMENTS.items():
+            print(f"{key}. {value}")
+        choice = input("Enter number: ")
+        specialty = MEDICAL_DEPARTMENTS.get(choice, "General Practitioner")
+        role = specialty if specialty in [
+            "Nurse", "Doctor", "Admin"] else "Doctor"
+        worker = HealthCareWorker(name, email, password, dob, role, specialty)
+        self.health_workers.setdefault(specialty, []).append(worker)
+        self.log_login(email, "HealthCareWorker")
+        print(
+            f"Health Care Worker {name} ({specialty}) onboarded successfully.")
+
+    def search_health_worker(self):
+        print("\nSearch Health Care Worker")
+        print("Available specialties:")
+        for key, value in MEDICAL_DEPARTMENTS.items():
+            print(f"{key}. {value}")
+        choice = input("Enter specialty number: ")
+        specialty = MEDICAL_DEPARTMENTS.get(choice)
+        workers = self.health_workers.get(specialty, [])
+        if workers:
+            print(f"\nAvailable {specialty}s:")
+            for worker in workers:
+                print(f"- {worker.name} ({worker.email})")
+        else:
+            print(f"No {specialty}s available.")
+
+    def simulate_scan(self):
+        print("\nSimulate QR Scan")
+        medical_id = input("Enter patient medical ID from QR or TXT file: ")
+        print("Select your specialty:")
+        for key, value in MEDICAL_DEPARTMENTS.items():
+            print(f"{key}. {value}")
+        choice = input("Enter number: ")
+        specialty = MEDICAL_DEPARTMENTS.get(choice)
+        workers = self.health_workers.get(specialty, [])
+        if workers:
+            worker = workers[0]
+            patient = self.patients.get(medical_id)
+            if patient:
+                worker.scan_patient(
+                    medical_id, {medical_id: patient.health_record})
+            else:
+                print("Patient not found.")
+        else:
+            print("No health care worker available for this specialty.")
+
+    def match_and_interact(self):
+        print("\nMatch Patient to Health Worker")
+        medical_id = input("Enter patient medical ID: ")
+        patient = self.patients.get(medical_id)
+        if not patient:
+            print("Patient not found.")
+            return
+
+        print("Select your specialty:")
+        for key, value in MEDICAL_DEPARTMENTS.items():
+            print(f"{key}. {value}")
+        choice = input("Enter number: ")
+        specialty = MEDICAL_DEPARTMENTS.get(choice)
+        workers = self.health_workers.get(specialty, [])
+        if workers:
+            worker = workers[0]
+            worker.interact_with_patient(patient)
+        else:
+            print("No health care worker available for this specialty.")
+
+    def show_audit_trail(self):
+        print("\nAudit Trail:")
+        for log in LOGIN_LOG:
+            print(log)
