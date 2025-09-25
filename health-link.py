@@ -239,3 +239,50 @@ class HealthLinkApp:
         print("\nAudit Trail:")
         for log in LOGIN_LOG:
             print(log)
+
+
+# Main program
+app = HealthLinkApp()
+show_welcome_screen()
+
+print("To begin, please select your role:")
+print("1. Patient")
+print("2. Health Care Worker")
+role_choice = input("Enter your role (1 or 2): ")
+
+if role_choice == "1":
+    app.onboard_patient()
+elif role_choice == "2":
+    app.onboard_health_worker()
+else:
+    print("Invalid choice. Proceeding to main menu.")
+
+while True:
+    print("\nMain Menu")
+    print("1. Onboard Another Patient")
+    print("2. Onboard Another Health Care Worker")
+    print("3. Search Health Care Worker")
+    print("4. Health Worker Scan Patient QR")
+    print("5. View Audit Trail")
+    print("6. Match Patient to Health Worker and Diagnose")
+    print("7. Exit")
+
+    choice = input("Select an option: ")
+
+    if choice == "1":
+        app.onboard_patient()
+    elif choice == "2":
+        app.onboard_health_worker()
+    elif choice == "3":
+        app.search_health_worker()
+    elif choice == "4":
+        app.simulate_scan()
+    elif choice == "5":
+        app.show_audit_trail()
+    elif choice == "6":
+        app.match_and_interact()
+    elif choice == "7":
+        print("Exiting Health-Link. Stay healthy.")
+        break
+    else:
+        print("Invalid choice. Please try again.")
