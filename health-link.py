@@ -140,6 +140,8 @@ class HealthCareWorker:
                 print(f"{key}: {value}")
         else:
             print("Patient not found.")
+
+
 class HealthLinkApp:
     def __init__(self):
         self.patients = {}  # medical_id → Patient object
